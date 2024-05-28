@@ -22,6 +22,13 @@ def download_zip(url, download_path):
     else:
         logging.error(f"Failed to download zip file from {url}, status code: {response.status_code}")
         raise Exception(f"Failed to download zip file from {url}")
+    
+def extract_zip(zip_file_path, output_dir):
+    with tempfile.TemporaryDirectory() as temp_dir:
+        with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+            zip_ref.extractall(temp_dir)
+            logging.info(f"Extracted zip file to {temp_dir}")
+        
 
 add_separator_to_log()
 
@@ -31,3 +38,4 @@ output_dir = os.path.join(os.getcwd(), "output_1largeRjet1lep")
 os.makedirs(output_dir, exist_ok=True)
 download_zip(zip_file_url, zip_file_path)
 
+extract_zip(zip_file_path, output_dir)
