@@ -1,11 +1,14 @@
 import os
 import zipfile
 import tempfile
+import hashlib
 import requests
 import ROOT
 import pandas as pd
 import logging
 from datetime import datetime
+import configparser
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, Float, String, DateTime
 
 log_file = 'processing.log'
 logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(message)s')
@@ -24,6 +27,63 @@ def download_zip(url, download_path):
     else:
         logging.error(f"Failed to download zip file from {url}, status code: {response.status_code}")
         raise Exception(f"Failed to download zip file from {url}")
+    
+def read_db_config(filename='db_config.ini', section='postgresql'):
+    parser = configparser.ConfigParser()
+    parser.read(filename)
+
+    db_config = {}
+    if parser.has_section(section):
+        params = parser.items(section)
+        for param in params:
+            db_config[param[0]] = param[1]
+    else:
+        raise Exception(f'Section {section} not found in the {filename} file')
+
+    return db_config
+
+def hash_table_name(table_name, max_length=63):
+    if len(table_name) > max_length:
+        hash_object = hashlib.md5(table_name.encode())
+        hash_suffix = hash_object.hexdigest()[:8]
+        return f"{table_name[:max_length-9]}_{hash_suffix}"
+    return table_name
+
+def add_table_to_postgres(csv_file, table_name):
+    db_config = read_db_config()
+    db_uri = f"postgresql://{db_config['user']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['database']}"
+    engine = create_engine(db_uri)
+    connection = engine.connect()
+
+    metadata = MetaData()
+
+    df = pd.read_csv(csv_file)
+    
+    columns = []
+    for col_name, col_type in zip(df.columns, df.dtypes):
+        if col_type == 'int64':
+            col = Column(col_name, Integer)
+        elif col_type == 'float64':
+            col = Column(col_name, Float)
+        elif col_type == 'datetime64[ns]':
+            col = Column(col_name, DateTime)
+        else:
+            col = Column(col_name, String)
+        columns.append(col)
+
+    table_name = hash_table_name(table_name)
+    table = Table(
+        table_name, metadata,
+        *columns
+    )
+
+    metadata.create_all(engine)
+    logging.info(f"Table {table_name} created.")
+
+    df.to_sql(table_name, engine, if_exists='append', index=False)
+    logging.info(f"Data inserted into table {table_name}.")
+
+    connection.close()
     
 def process_root_file(root_file_path, output_dir):
     root_file = ROOT.TFile.Open(root_file_path)
@@ -56,6 +116,8 @@ def process_root_file(root_file_path, output_dir):
             df = pd.DataFrame(data)
             df.to_csv(output_file, index=False)
             logging.info(f"CSV file has been created: {output_file}")
+
+            add_table_to_postgres(output_file, table_name=f"{os.path.basename(root_file_path)}_{tree_name}")
 
 def extract_and_process_zip(zip_file_path, output_dir):
     with tempfile.TemporaryDirectory() as temp_dir:
