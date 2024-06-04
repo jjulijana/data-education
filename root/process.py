@@ -8,7 +8,7 @@ import pandas as pd
 import logging
 from datetime import datetime
 import configparser
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, Float, String, DateTime
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, Float, String, DateTime, inspect
 
 log_file = 'processing.log'
 logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(message)s')
@@ -77,11 +77,15 @@ def add_table_to_postgres(csv_file, table_name):
         *columns
     )
 
-    metadata.create_all(engine)
-    logging.info(f"Table {table_name} created.")
-
-    df.to_sql(table_name, engine, if_exists='append', index=False)
-    logging.info(f"Data inserted into table {table_name}.")
+    inspector = inspect(engine)
+    if inspector.has_table(table_name):
+        logging.info(f"Table {table_name} already exists. Updating data.")
+        df.to_sql(table_name, engine, if_exists='replace', index=False)
+    else:
+        metadata.create_all(engine)
+        logging.info(f"Table {table_name} created.")
+        df.to_sql(table_name, engine, if_exists='append', index=False)
+        logging.info(f"Data inserted into table {table_name}.")
 
     connection.close()
     
@@ -100,9 +104,6 @@ def process_root_file(root_file_path, output_dir):
             logging.info(f"Processing TTree: {tree_name}")
 
             output_file = os.path.join(output_dir, f"{os.path.basename(root_file_path)}_{tree_name}.csv")
-            if os.path.exists(output_file):
-                logging.info(f"CSV file already exists: {output_file}")
-                return
             
             data = {}
             for branch in tree.GetListOfBranches():
@@ -132,12 +133,13 @@ def extract_and_process_zip(zip_file_path, output_dir):
                     process_root_file(root_file_path, output_dir)
         
 
-add_separator_to_log()
+if __name__ == "__main__":
+    add_separator_to_log()
 
-zip_file_url = "https://atlas-opendata.web.cern.ch/atlas-opendata/samples/2020/1largeRjet1lep.zip"
-zip_file_path = os.path.join(os.getcwd(), "1largeRjet1lep.zip")
-output_dir = os.path.join(os.getcwd(), "output_1largeRjet1lep")
-os.makedirs(output_dir, exist_ok=True)
-download_zip(zip_file_url, zip_file_path)
+    zip_file_url = "https://atlas-opendata.web.cern.ch/atlas-opendata/samples/2020/1largeRjet1lep.zip"
+    zip_file_path = os.path.join(os.getcwd(), "1largeRjet1lep.zip")
+    output_dir = os.path.join(os.getcwd(), "output_1largeRjet1lep")
+    os.makedirs(output_dir, exist_ok=True)
+    download_zip(zip_file_url, zip_file_path)
 
-extract_and_process_zip(zip_file_path, output_dir)
+    extract_and_process_zip(zip_file_path, output_dir)
