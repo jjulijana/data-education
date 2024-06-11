@@ -1,3 +1,7 @@
+*largeRjet1*
+*.ini
+*.root
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
