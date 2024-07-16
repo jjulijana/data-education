@@ -1,0 +1,28 @@
+- S obzirom da ste prosli konekcije sa bazom - ovo je vise vezbanje rada sa podacima - mozete da radite samo kao ucitavanje podataka u DataFrame, obrada i onda cuvanje nazad u csv. 
+
+Validacija podataka (python skripta):
+specijalni karakteri: */!/#/?/@
+
+~ users_data.csv
+
+1) Koristiti logove za sve sto se desava - ispisi, akcije 
+2) Izbaciti redove u kojima je popunjeno manje od 40% kolona
+3) Ispisati koliko koja kolona ima nedostajucih vrednost (NA):
+4) Validacija kolona i popunjavanje NA vrednosti:
+	a) 'login_email'
+		- validacija: napisati regularni izraz koji proverava da li je email u pravom formatu - string (ne sme manje od 3 karaktera), dve cifre, @example.com(user43@example.com); ispisati email adrese koje ne ispunjavaju uslov i oznaciti ih kao NA
+		- popunjavanje NA: generisati random email u validnom formatu 
+	b) 'main_password' i 'backup_password'
+		- od ove dve kolone napraviti jednu ('password') - ako postoji samo jedna uzmi nju, ako postoje obe uzmi onu koja ispunjava vise uslova (uslovi: veliko slovo, malo slovo, specijalni karakteri, cifra) - ako ispunjavaju iste uslove uzmi onu koja ima vise karaktera - ako je sve isto main_password
+		- popunjavnje NA: kada se spoje ove dve kolone u password u slucaju da je password i dalje NA staviti defaultni password - svejedno koji
+		- zatim dodati novu kolonu -> 'password_strenght' i popuniti je na sledeci nacin: Kriterijumi su: (6+ karaktera, velika/mala slova, brojevi, specijalni karakteri) -> - 'weak' ako je nijedan ili jedan kriterijum ispunjen, 'medium' 2/3, 'strong' sva 4
+	c) 'first_name' i 'last_name'
+		- validacija: Proveriti da li svako ime i prezime vise bar 2 karaktera i da li su popunjena oba polja - ako nema vise od 2 karaktera ili ako fali ime(prezime) oznaciti kao NA 
+		- popunjavanje NA: koristiti python biblioteku 'names' za generisanje laznih imena i popuniti nedostajuca polja
+	d) 'department'
+		- popunjavanje NA: popuniti NA sa onim koji je najzastupljeniji a zatim ispisati koji deparment se koliko puta ponavlja (zapisati random)
+5) Provera duplikata: ne smeju da postoje dve iste email adrese - ako postoje obisati red user-a cije je prezime kasnije u alfabetu
+6) Dodati kolonu 'id' za svakog user-a - skracenica 'deparment'-a (prva tri slova), inicijali imena i prezimena i redni broj - ako postoje dva korisnika sa istim imenom i prezimenom povecavati rb 1 pa 2 itd - ako postoji samo jedan rb = 0 (malim slovima sve)
+
+
+- Slobodno dodajte i sami neke validacije ili nove kolone itd; Zahtevi nisu potpuno smisleni poenta je samo u vezbanju svega

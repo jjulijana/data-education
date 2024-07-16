@@ -1,0 +1,48 @@
+
+================================================================================
+New Run: 2024-07-16 13:16:14.393126
+================================================================================
+2024-07-16 13:16:14,395 - Read csv file: users_data.csv. Number of rows: 33, Number of columns: 6
+2024-07-16 13:16:14,396 - Rows with less than 40.0% columns filled are removed. Remaining rows: 30
+2024-07-16 13:16:14,396 - Missing values per column:
+login_email        5
+main_password      7
+backup_password    7
+first_name         6
+last_name          7
+department         6
+dtype: int64
+2024-07-16 13:16:14,396 - Starting data validation.
+2024-07-16 13:16:14,397 - Invalid email addresses:
+['gh34@example.com', nan, '*', ' ', nan, nan, nan, nan, 'uvwx@example.com']
+2024-07-16 13:16:14,397 - Generated random email: Aoc75@example.com
+2024-07-16 13:16:14,397 - Generated random email: wXj91@example.com
+2024-07-16 13:16:14,397 - Generated random email: djj11@example.com
+2024-07-16 13:16:14,397 - Generated random email: h6K23@example.com
+2024-07-16 13:16:14,397 - Generated random email: Zel41@example.com
+2024-07-16 13:16:14,397 - Generated random email: SbN96@example.com
+2024-07-16 13:16:14,397 - Generated random email: bsg12@example.com
+2024-07-16 13:16:14,397 - Generated random email: HvQ84@example.com
+2024-07-16 13:16:14,397 - Generated random email: 8iB48@example.com
+2024-07-16 13:16:14,397 - Choosing passwords and calculating password strengths...
+2024-07-16 13:16:14,399 - Password strengths calculated.
+2024-07-16 13:16:14,399 - Dropped columns: main_password, backup_password.
+2024-07-16 13:16:14,399 - Invalid names found: nan, nan
+2024-07-16 13:16:14,400 - Invalid names found: nan, nan
+2024-07-16 13:16:14,401 - Invalid names found: nan, Martinez
+2024-07-16 13:16:14,401 - Invalid names found: Sophia, nan
+2024-07-16 13:16:14,402 - Invalid names found: Aiden, nan
+2024-07-16 13:16:14,402 - Invalid names found: Charlotte, nan
+2024-07-16 13:16:14,402 - Invalid names found: nan, Kumar
+2024-07-16 13:16:14,403 - Invalid names found: nan, nan
+2024-07-16 13:16:14,403 - Invalid names found: nan, nan
+2024-07-16 13:16:14,428 - Invalid names changed (generated valid).
+2024-07-16 13:16:14,429 - Department counts:
+department
+Marketing      16
+Sales           8
+Engineering     6
+Name: count, dtype: int64
+2024-07-16 13:16:14,431 - Dropped columns with duplicated emails.
+2024-07-16 13:16:14,443 - Id column generated.
+2024-07-16 13:16:14,444 - Saved validated data to users_data_validated.csv. Number of rows: 29, Number of columns: 7
